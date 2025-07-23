@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PureNest Cleaning | South Florida’s Trusted Cleaning Professionals</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Manrope', sans-serif;
+      background-color: #fff;
+      color: #333;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #1e88e5, #42a5f5);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    header p {
+      font-size: 1.25rem;
+    }
+    .cta-button {
+      margin-top: 2rem;
+      background-color: #fff;
+      color: #1e88e5;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    section {
+      padding: 3rem 2rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+    }
+    .service-card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    .service-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .quote-form {
+      background-color: #f1f1f1;
+      padding: 2rem;
+      border-radius: 8px;
+    }
+    .quote-form input, .quote-form textarea, .quote-form button {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+    .quote-form button {
+      background-color: #1e88e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background-color: #fafafa;
+      color: #666;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PureNest Cleaning</h1>
+    <p>South Florida’s Trusted Cleaning Professionals</p>
+    <a href="#quote" class="cta-button">Get a Free Quote</a>
+  </header>
+
+  <section>
+    <h2 style="text-align:center; margin-bottom:2rem;">What We Offer</h2>
+    <div class="services">
+      <div class="service-card">
+        <h3>🏠 Residential Cleaning</h3>
+        <p>Thorough home cleanings that leave your space spotless & refreshed.</p>
+      </div>
+      <div class="service-card">
+        <h3>🏢 Office Cleaning</h3>
+        <p>Professional office cleaning that creates a productive environment.</p>
+      </div>
+      <div class="service-card">
+        <h3>🧽 Move-In / Move-Out</h3>
+        <p>Perfect for new beginnings — deep cleans for transitions.</p>
+      </div>
+      <div class="service-card">
+        <h3>🗓 Scheduled Maintenance</h3>
+        <p>Weekly, bi-weekly & monthly cleanings tailored to your needs.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="quote">
+    <h2 style="text-align:center; margin-bottom:1rem;">Request Your Free Quote</h2>
+    <div class="quote-form">
+      <form>
+        <input type="text" name="name" placeholder="Your Name" required />
+        <input type="email" name="email" placeholder="Your Email" required />
+        <textarea name="details" rows="4" placeholder="Tell us what you need..." required></textarea>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 PureNest Cleaning. All rights reserved.
+  </footer>
+</body>
+</html>
