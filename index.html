@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Florida Cleaning Company | Get Free Quotes from Vetted Cleaners</title>
+  <meta name="description" content="Tell us about your space and get free quotes from vetted, licensed & insured cleaning companies. Florida Cleaning Company is a referral service connecting you with trusted cleaners across South Florida." />
+  <link rel="canonical" href="#top"/>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Leaflet (map, no API key required) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --ink:#0b2230;
+      --muted:#4a5b66;
+      --brand:#0d3b66;
+      --brand-ink:#ffffff;
+      --accent:#ea7b27;
+      --accent-ink:#000000;
+      --card:#ffffff;
+      --line:#e6edf2;
+      --success:#1f8a5b;
+      --radius:14px;
+      --shadow:0 10px 30px rgba(13,59,102,.12);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-size:16px; line-height:1.6; color:var(--ink); background:var(--bg);
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    }
+
+    /* Topbar */
+    .topbar{position:sticky; top:0; z-index:1000; backdrop-filter:saturate(140%) blur(6px);
+      background:rgba(255,255,255,.82); border-bottom:1px solid var(--line);}
+    .wrap{max-width:1100px; margin:0 auto; padding:0 18px;}
+    .nav{display:flex; align-items:center; justify-content:space-between; min-height:64px;}
+    .brand{display:flex; align-items:center; gap:.6rem; text-decoration:none; color:var(--brand);}
+    .brand-mark{width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--brand), #084074 60%);
+      display:grid; place-items:center; color:#fff; font-weight:700; box-shadow:var(--shadow);}
+    .brand b{font-size:1.05rem}
+    .nav-links{display:flex; gap:16px;}
+    .nav-links a{text-decoration:none; color:var(--ink); padding:8px 10px; border-radius:8px;}
+    .nav-links a:hover{background:#f3f7fa}
+    .nav-cta{display:inline-block; text-decoration:none; background:var(--accent); color:var(--accent-ink);
+      padding:10px 14px; border-radius:10px; font-weight:700;}
+    .nav-cta:hover{filter:brightness(.95)}
+
+    /* Hero */
+    .hero{position:relative; isolation:isolate; overflow:hidden; color:#fff;
+      background: radial-gradient(1200px 600px at 20% 20%, rgba(13,59,102,.55), rgba(13,59,102,.35)),
+                  linear-gradient(180deg, rgba(13,59,102,.55), rgba(13,59,102,.35));}
+    .hero:before{content:""; position:absolute; inset:0;
+      background:url('https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=2400&auto=format&fit=crop') center/cover no-repeat;
+      opacity:.38; z-index:-1; transform:scale(1.02);}
+    .hero-inner{padding:72px 18px 48px}
+    .hero h1{font-size:clamp(28px, 4.5vw, 44px); line-height:1.15; margin:0 0 10px}
+    .hero p{margin:0 0 18px; color:#e8eef3}
+    .badges{display:flex; flex-wrap:wrap; gap:10px; margin:14px 0 28px}
+    .badge{background:rgba(255,255,255,.14); color:#fff; border:1px solid rgba(255,255,255,.25);
+      padding:6px 10px; border-radius:999px; font-size:.92rem;}
+    .cta-row{display:flex; gap:12px; flex-wrap:wrap}
+    .btn{display:inline-block; border:none; cursor:pointer; text-decoration:none; padding:14px 18px;
+      border-radius:12px; font-weight:700; font-size:1rem;}
+    .btn-primary{background:var(--accent); color:var(--accent-ink)}
+    .btn-primary:hover{filter:brightness(.95)}
+    .btn-ghost{background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.25)}
+    .btn-ghost:hover{background:rgba(255,255,255,.18)}
+
+    /* Sections */
+    section{padding:56px 18px; border-top:1px solid var(--line)}
+    h2{font-size:clamp(22px,3.2vw,30px); margin:0 0 8px; color:var(--brand)}
+    .lede{color:var(--muted); margin:0 0 24px}
+
+    /* Cards */
+    .cards{display:grid; gap:16px; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr))}
+    .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);}
+    .card h3{margin:0 0 6px; font-size:1.05rem}
+    .pill{display:inline-block; font-size:.82rem; padding:4px 8px; border-radius:999px; background:#eef5fb; color:#0c3b64; margin-bottom:10px}
+
+    /* Quote */
+    .quote{display:grid; gap:22px; grid-template-columns:1.05fr .95fr; align-items:start;}
+    .panel{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);}
+    .panel h3{margin:2px 0 12px}
+    .row{display:grid; gap:12px; grid-template-columns:1fr 1fr}
+    .row-3{display:grid; gap:12px; grid-template-columns:1fr 1fr 1fr}
+    .row-1{display:grid; gap:12px; grid-template-columns:1fr}
+    label{font-weight:600; font-size:.92rem}
+    input, select, textarea{width:100%; font:inherit; padding:12px 12px; border:1px solid #cfd9e3; border-radius:10px; background:#fff;}
+    textarea{min-height:110px; resize:vertical}
+    .help{font-size:.9rem; color:var(--muted)}
+    .fine{font-size:.85rem; color:var(--muted)}
+    .success{color:var(--success); font-weight:700}
+
+    /* Map */
+    .map-card{overflow:hidden; border-radius:var(--radius); border:1px solid var(--line); box-shadow:var(--shadow);}
+    #serviceMap{width:100%; height:420px;}
+    .map-legend{position:absolute; right:12px; bottom:12px; background:#fff; border:1px solid var(--line);
+      border-radius:10px; padding:8px 10px; font-size:.9rem; color:#123;}
+
+    /* Footer */
+    footer{background:#0f1a22; color:#c9d5df}
+    .foot-grid{display:grid; gap:16px; grid-template-columns:1fr 1fr}
+    .foot a{color:#c9d5df; text-decoration:none}
+    .foot a:hover{text-decoration:underline}
+
+    /* Modals */
+    .modal{position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; z-index:3000; align-items:center; justify-content:center; padding:18px;}
+    .modal-card{max-width:860px; width:100%; background:#fff; color:#0b2230; border-radius:16px; padding:22px; box-shadow:var(--shadow); max-height:80vh; overflow:auto;}
+    .modal h3{margin-top:0}
+    .closex{float:right; cursor:pointer; font-weight:700;}
+
+    /* Thank-you overlay */
+    #thanksFull{
+      position:fixed; inset:0; background:linear-gradient(180deg, rgba(13,59,102,.9), rgba(13,59,102,.88)),
+      url('https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat;
+      display:none; z-index:2000; color:#fff;
+    }
+    .thanks-inner{max-width:760px; margin:8vh auto; padding:28px; text-align:center}
+    .thanks-card{background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); border-radius:18px; padding:24px;}
+    .thanks-actions{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:14px}
+    .thanks-actions a{background:#fff; color:#0b2230; padding:12px 16px; border-radius:12px; text-decoration:none; font-weight:700}
+    .thanks-actions a.secondary{background:transparent; color:#fff; border:1px solid rgba(255,255,255,.6)}
+
+    @media (max-width:920px){
+      .quote{grid-template-columns:1fr}
+      .foot-grid{grid-template-columns:1fr}
+      .nav-links{display:none}
+      #serviceMap{height:360px}
+    }
+  </style>
+
+  <!-- Organization schema (referral service) -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"Florida Cleaning Company",
+    "url":"/",
+    "description":"Florida Cleaning Company is a referral service that connects you with vetted, licensed & insured cleaning companies across South Florida.",
+    "areaServed":"South Florida",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer support"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="topbar" role="banner">
+    <div class="wrap nav" aria-label="Main">
+      <a class="brand" href="/">
+        <span class="brand-mark">FC</span>
+        <b>Florida Cleaning Company</b>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#services">Services</a>
+        <a href="#service-area">Service Area</a>
+        <a href="#quote">Get Quotes</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <a class="nav-cta" href="#quote" aria-label="Request free quotes">Free Quotes</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section id="top" class="hero" role="region" aria-label="Hero">
+    <div class="wrap hero-inner">
+      <h1>Get matched with a <strong>trusted cleaner</strong></h1>
+      <p>Tell us about your space and get <strong>free quotes</strong> from vetted, licensed & insured cleaning companies.</p>
+      <div class="badges">
+        <span class="badge">Vetted partners • Licensed & insured</span>
+        <span class="badge">Family & pet-safe options</span>
+        <span class="badge">South Florida coverage</span>
+      </div>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#quote">Get My Free Quotes</a>
+        <!-- Removed "Questions? Call" button -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services" class="wrap" role="region" aria-label="Services">
+    <h2>What we help you find</h2>
+    <p class="lede">Standard Home • Deep • Move-In/Out • Commercial • Post-Construction • Specialty</p>
+    <div class="cards" aria-live="polite">
+      <article class="card"><span class="pill">Residential</span><h3>Standard Home Cleaning</h3><p>Consistent upkeep for kitchens, bathrooms, bedrooms, and living areas—matched to your schedule.</p></article>
+      <article class="card"><span class="pill">Deep</span><h3>Deep Cleaning</h3><p>Top-to-bottom detail for baseboards, vents, grout, and hard-to-reach areas.</p></article>
+      <article class="card"><span class="pill">Move-In/Out</span><h3>Moving Clean</h3><p>Empty-home detail including inside cabinets and appliances—ready for keys and photos.</p></article>
+      <article class="card"><span class="pill">Commercial</span><h3>Office & Retail</h3><p>After-hours or daytime options for offices, suites, storefronts, and common areas.</p></article>
+      <article class="card"><span class="pill">Post-Construction</span><h3>New Build / Renovation</h3><p>Dust & debris removal, fine particulate cleanup, sticker/film removal, ready-to-show.</p></article>
+      <article class="card"><span class="pill">Other</span><h3>Have something else?</h3><p>Tell us what you need—STR turns, event aftermath, estates, specialty jobs, and more.</p></article>
+    </div>
+  </section>
+
+  <!-- Quote -->
+  <section id="quote" class="wrap" role="region" aria-label="Request Quotes">
+    <h2>Request your free quotes</h2>
+    <p class="lede">Answer a few quick questions. We’ll forward your request to <strong>trusted cleaning providers</strong> who will contact you with a quote.</p>
+
+    <div class="quote">
+      <form id="quoteForm" class="panel" action="https://formspree.io/f/xjkoppvo" method="POST" novalidate>
+        <h3>About your cleaning</h3>
+
+        <div class="row">
+          <div>
+            <label for="service">Service Type</label>
+            <select id="service" name="service" required>
+              <option value="Residential" selected>Residential</option>
+              <option value="Deep">Deep</option>
+              <option value="Move-In/Out">Move-In/Out</option>
+              <option value="Commercial">Commercial</option>
+              <option value="Post-Construction">Post-Construction</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="frequency">Frequency</label>
+            <select id="frequency" name="frequency">
+              <option value="One-time" selected>One-time</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Bi-weekly">Bi-weekly</option>
+              <option value="Monthly">Monthly</option>
+              <option value="As needed">As needed</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="dynamicFields" class="row-3" aria-live="polite" aria-atomic="true"></div>
+
+        <h3>Your contact details</h3>
+        <div class="row">
+          <div>
+            <label for="name">Full Name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required />
+          </div>
+          <div>
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(xxx) xxx-xxxx" required />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+          </div>
+          <div>
+            <label for="city">City</label>
+            <input id="city" name="city" type="text" placeholder="e.g., Boca Raton" />
+          </div>
+        </div>
+
+        <div class="row-1">
+          <div>
+            <label for="notes">Anything we should know?</label>
+            <textarea id="notes" name="notes" placeholder="Access details, pets, special requests, preferred dates…"></textarea>
+            <!-- Hidden meta fields for basic consent logging and attribution -->
+            <input type="hidden" id="consent_text" name="consent_text" value="">
+            <input type="hidden" id="consent_version" name="consent_version" value="v1.0-2025-11-02">
+            <input type="hidden" id="consent_timestamp" name="consent_timestamp" value="">
+            <input type="hidden" id="utm_source" name="utm_source" value="">
+            <input type="hidden" id="utm_medium" name="utm_medium" value="">
+            <input type="hidden" id="utm_campaign" name="utm_campaign" value="">
+            <input type="hidden" id="utm_term" name="utm_term" value="">
+            <input type="hidden" id="utm_content" name="utm_content" value="">
+            <input type="hidden" name="_subject" value="New Cleaning Lead — Florida Cleaning Company">
+            <input type="hidden" name="source" value="floridacleaningcompany.com">
+            <input type="hidden" name="_redirect" value="/">
+          </div>
+        </div>
+
+        <!-- TCPA/consent checkbox -->
+        <div class="row-1">
+          <label style="display:flex; gap:10px; align-items:flex-start">
+            <input id="consent" name="consent" type="checkbox" required aria-required="true" style="margin-top:4px">
+            <span class="fine">
+              By checking this box and submitting, you agree to our <a href="#" id="openTerms">Terms</a> and <a href="#" id="openPrivacy">Privacy Policy</a> and provide your <strong>express written consent</strong> to be contacted by Florida Cleaning Company and up to <strong>3</strong> partner cleaning providers at the number and email you provided, including via <strong>autodialed</strong> calls and text messages. Message & data rates may apply. Your consent is not required to make a purchase. You may opt out at any time.
+            </span>
+          </label>
+          <div class="fine">To limit sharing/sale of personal data where applicable by law, use: <a href="#" id="openDNS">Do Not Sell or Share My Personal Information</a>.</div>
+        </div>
+
+        <div class="row">
+          <button class="btn btn-primary" type="submit">Get My Free Quotes</button>
+          <!-- Removed "Or call (561) ..." button -->
+        </div>
+
+        <p class="fine">We forward your request to trusted providers who contact you promptly. Response times may vary by area and availability.</p>
+        <p class="fine"><em>Florida Cleaning Company is a referral service that connects consumers with independent cleaning companies. We do not directly provide cleaning services.</em></p>
+      </form>
+
+      <aside class="panel" aria-label="Why use Florida Cleaning Company">
+        <h3>Why South Florida uses Florida Cleaning Company</h3>
+        <ul>
+          <li><strong>Vetted partners:</strong> licensed, insured, and background-checked.</li>
+          <li><strong>Family-safe options:</strong> non-toxic, pet-friendly products available.</li>
+          <li><strong>Fast quotes:</strong> providers reach out quickly with pricing and availability.</li>
+          <li><strong>One form, multiple options:</strong> compare quotes and choose what fits.</li>
+        </ul>
+        <hr style="border:none;border-top:1px solid var(--line);margin:14px 0">
+        <p class="help">Service area: Boca Raton • Delray Beach • Boynton Beach • Deerfield Beach • Pompano Beach • Fort Lauderdale • Parkland • Coral Springs & nearby.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Service Area Map (Leaflet) -->
+  <section id="service-area" class="wrap" aria-label="Service Area">
+    <h2>Service Area</h2>
+    <p class="lede">We connect you with cleaners across South Florida’s coastal corridor from Fort Lauderdale through Boca/Delray to Boynton, plus Parkland & Coral Springs.</p>
+    <div class="map-card" role="region" aria-label="Map of South Florida service area" style="position:relative">
+      <div id="serviceMap"></div>
+      <div class="map-legend">Highlighted area = where our partners serve</div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="wrap" role="region" aria-label="Contact">
+    <h2>Contact</h2>
+    <div class="panel foot">
+      <div class="foot-grid">
+        <div>
+          <!-- Removed Phone and Email lines -->
+          <strong>Hours:</strong> Mon–Sun, 7:00 AM – 7:00 PM
+        </div>
+        <div>
+          <p><strong>How it works</strong><br>
+          1) Tell us about your space • 2) We forward your request • 3) Providers contact you with quotes • 4) You choose the best fit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer role="contentinfo">
+    <div class="wrap" style="padding:24px 18px; display:flex; justify-content:space-between; gap:14px; align-items:center;">
+      <div>&copy; <span id="y"></span> Florida Cleaning Company. All rights reserved.</div>
+      <div style="display:flex; gap:14px;">
+        <a href="#" id="openTerms2">Terms</a>
+        <a href="#" id="openPrivacy2">Privacy</a>
+        <a href="#" id="openDNS2">Do Not Sell or Share</a>
+        <a href="#top">Back to top ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Friendly Thank-you Screen -->
+  <div id="thanksFull" role="dialog" aria-labelledby="thanksTitle" aria-modal="true">
+    <div class="thanks-inner">
+      <div class="thanks-card">
+        <h2 id="thanksTitle" style="margin-top:0">Thanks! Your request was sent. 🎉</h2>
+        <p style="margin:6px 0 12px; font-size:1.05rem">
+          We’ve forwarded your request to trusted cleaning providers in your area. They’ll contact you with quotes soon.
+        </p>
+        <ul style="text-align:left; max-width:560px; margin:0 auto 10px; line-height:1.7;">
+          <li><strong>What happens next:</strong> providers review your details and reach out.</li>
+          <li><strong>Compare & choose:</strong> pick the quote and schedule that fit you.</li>
+        </ul>
+        <div class="thanks-actions">
+          <a href="/" class="secondary">Back to homepage</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terms / Privacy / DNS Modals -->
+  <div id="modalTerms" class="modal" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+    <div class="modal-card">
+      <span class="closex" data-close="modalTerms">✕</span>
+      <h3 id="termsTitle">Terms of Service</h3>
+      <p><strong>What we do.</strong> Florida Cleaning Company (“Florida Cleaning Company”) operates a referral platform that connects consumers with independent cleaning service providers (“Partners”). Florida Cleaning Company does not provide cleaning services.</p>
+      <p><strong>Your submissions.</strong> By submitting a request, you authorize Florida Cleaning Company to share your information with Partners so they may contact you about your cleaning request and provide quotes.</p>
+      <p><strong>Consent to contact.</strong> By providing your contact details and checking the consent box, you provide your express written consent to receive calls, texts, and emails (including via autodialer) from Florida Cleaning Company and up to 3 Partners regarding your request. Consent is not a condition of purchase. Message and data rates may apply. You may opt out at any time.</p>
+      <p><strong>No guarantees.</strong> Availability, pricing, and service quality are the responsibility of Partners. Florida Cleaning Company is not responsible for services performed by Partners.</p>
+      <p><strong>Disputes.</strong> Any disputes related to services must be resolved with the applicable Partner.</p>
+    </div>
+  </div>
+
+  <div id="modalPrivacy" class="modal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+    <div class="modal-card">
+      <span class="closex" data-close="modalPrivacy">✕</span>
+      <h3 id="privacyTitle">Privacy Policy</h3>
+      <p><strong>Personal Information We Collect.</strong> We collect information you provide in the form (name, phone, email, service details, city) and limited technical data (e.g., UTM parameters).</p>
+      <p><strong>How We Use It.</strong> We use your information to match you with Partners and facilitate quotes. We may share/sell your personal information to Partners for this purpose.</p>
+      <p><strong>Your Choices.</strong> You may opt out of sale/sharing (see “Do Not Sell or Share”), request deletion, or request access by emailing privacy@floridacleaningcompany.com.</p>
+      <p><strong>Security.</strong> We use reasonable safeguards to protect your data. However, no method of transmission is 100% secure.</p>
+      <p><strong>State Rights.</strong> Residents of certain states (e.g., CA) may have additional rights regarding personal information, including the right to opt out of sale/sharing.</p>
+    </div>
+  </div>
+
+  <div id="modalDNS" class="modal" role="dialog" aria-modal="true" aria-labelledby="dnsTitle">
+    <div class="modal-card">
+      <span class="closex" data-close="modalDNS">✕</span>
+      <h3 id="dnsTitle">Do Not Sell or Share My Personal Information</h3>
+      <p>If you prefer that we do not sell or share your personal information with Partners, submit your request to privacy@floridacleaningcompany.com. Include your name, the email/phone you used on the form, and “Do Not Sell or Share” in the subject line. We will honor your request as required by applicable law.</p>
+    </div>
+  </div>
+
+  <script>
+    // year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Show the friendlier full-screen thank-you when redirected with #thanks
+    function showThanks(){
+      const t = document.getElementById('thanksFull');
+      if (location.hash === '#thanks') t.style.display = 'block';
+    }
+    window.addEventListener('hashchange', showThanks);
+    showThanks();
+
+    // Modal utils
+    function openModal(id){ document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id){ document.getElementById(id).style.display = 'none'; }
+    document.getElementById('openTerms')?.addEventListener('click', e => { e.preventDefault(); openModal('modalTerms'); });
+    document.getElementById('openPrivacy')?.addEventListener('click', e => { e.preventDefault(); openModal('modalPrivacy'); });
+    document.getElementById('openDNS')?.addEventListener('click', e => { e.preventDefault(); openModal('modalDNS'); });
+    document.getElementById('openTerms2')?.addEventListener('click', e => { e.preventDefault(); openModal('modalTerms'); });
+    document.getElementById('openPrivacy2')?.addEventListener('click', e => { e.preventDefault(); openModal('modalPrivacy'); });
+    document.getElementById('openDNS2')?.addEventListener('click', e => { e.preventDefault(); openModal('modalDNS'); });
+    document.querySelectorAll('.closex').forEach(el => el.addEventListener('click', e => closeModal(e.target.getAttribute('data-close'))));
+    window.addEventListener('keydown', e => { if(e.key === 'Escape'){ ['modalTerms','modalPrivacy','modalDNS'].forEach(closeModal); }});
+
+    // Capture UTM params to hidden fields
+    const params = new URLSearchParams(window.location.search);
+    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(k => {
+      const v = params.get(k) || '';
+      const el = document.getElementById(k);
+      if (el) el.value = v;
+    });
+
+    // Consent text + timestamp
+    const CONSENT_TEXT = "I agree to Terms & Privacy and consent to contact by Florida Cleaning Company and up to 3 partner cleaning providers via calls/texts/email (including autodialer); consent not required to buy; opt-out anytime.";
+    const ctext = document.getElementById('consent_text');
+    const cstamp = document.getElementById('consent_timestamp');
+    if (ctext) ctext.value = CONSENT_TEXT;
+    if (cstamp) cstamp.value = new Date().toISOString();
+
+    // Dynamic form fields based on service
+    const dynamic = document.getElementById('dynamicFields');
+    const service = document.getElementById('service');
+
+    const layouts = {
+      "Residential": `
+        <div>
+          <label for="bedrooms">Bedrooms</label>
+          <select id="bedrooms" name="bedrooms">
+            <option>1</option><option>2</option><option selected>3</option><option>4</option><option>5+</option>
+          </select>
+        </div>
+        <div>
+          <label for="bathrooms">Bathrooms</label>
+          <select id="bathrooms" name="bathrooms">
+            <option>1</option><option selected>2</option><option>3</option><option>4+</option>
+          </select>
+        </div>
+        <div>
+          <label for="sqft">Approx. Sq Ft</label>
+          <input id="sqft" name="sqft" type="number" inputmode="numeric" placeholder="e.g., 1800" />
+        </div>
+        <div>
+          <label for="homeType">Home Type</label>
+          <select id="homeType" name="homeType">
+            <option selected>Single-family</option><option>Townhome</option><option>Condo/Apartment</option>
+          </select>
+        </div>
+        <div>
+          <label for="pets">Pets?</label>
+          <select id="pets" name="pets"><option>None</option><option>Cat</option><option>Dog</option><option>Multiple</option></select>
+        </div>
+        <div>
+          <label for="preferredDate">Preferred Date</label>
+          <input id="preferredDate" name="preferredDate" type="date" />
+        </div>
+      `,
+      "Deep": `
+        <div>
+          <label for="areas">Focus Areas</label>
+          <select id="areas" name="areas">
+            <option selected>Kitchen & Baths</option><option>All Rooms</option><option>After Party</option>
+          </select>
+        </div>
+        <div>
+          <label for="condition">Home Condition</label>
+          <select id="condition" name="condition">
+            <option selected>Typical</option><option>Heavily Soiled</option><option>Haven’t cleaned in months</option>
+          </select>
+        </div>
+        <div>
+          <label for="sqft2">Approx. Sq Ft</label>
+          <input id="sqft2" name="sqft" type="number" inputmode="numeric" placeholder="e.g., 2200" />
+        </div>
+        <div>
+          <label for="bed2">Bedrooms</label>
+          <select id="bed2" name="bedrooms">
+            <option>1</option><option>2</option><option selected>3</option><option>4</option><option>5+</option>
+          </select>
+        </div>
+        <div>
+          <label for="bath2">Bathrooms</label>
+          <select id="bath2" name="bathrooms">
+            <option>1</option><option selected>2</option><option>3</option><option>4+</option>
+          </select>
+        </div>
+        <div>
+          <label for="preferredDate2">Preferred Date</label>
+          <input id="preferredDate2" name="preferredDate" type="date" />
+        </div>
+      `,
+      "Move-In/Out": `
+        <div>
+          <label for="occupied">Is the home empty?</label>
+          <select id="occupied" name="occupied">
+            <option selected>Yes, empty</option><option>No, partially furnished</option>
+          </select>
+        </div>
+        <div>
+          <label for="inside">Include inside appliances & cabinets?</label>
+          <select id="inside" name="inside">
+            <option selected>Yes</option><option>No</option>
+          </select>
+        </div>
+        <div>
+          <label for="sqft3">Approx. Sq Ft</label>
+          <input id="sqft3" name="sqft" type="number" inputmode="numeric" placeholder="e.g., 1400" />
+        </div>
+        <div>
+          <label for="bed3">Bedrooms</label>
+          <select id="bed3" name="bedrooms">
+            <option>1</option><option>2</option><option selected>3</option><option>4</option><option>5+</option>
+          </select>
+        </div>
+        <div>
+          <label for="bath3">Bathrooms</label>
+          <select id="bath3" name="bathrooms">
+            <option>1</option><option selected>2</option><option>3</option><option>4+</option>
+          </select>
+        </div>
+        <div>
+          <label for="preferredDate3">Preferred Date</label>
+          <input id="preferredDate3" name="preferredDate" type="date" />
+        </div>
+      `,
+      "Commercial": `
+        <div>
+          <label for="spaceType">Space Type</label>
+          <select id="spaceType" name="spaceType">
+            <option selected>Office</option><option>Retail</option><option>Medical</option><option>Warehouse</option><option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="employees"># of Employees/Desks</label>
+          <input id="employees" name="employees" type="number" inputmode="numeric" placeholder="e.g., 25" />
+        </div>
+        <div>
+          <label for="sqft4">Approx. Sq Ft</label>
+          <input id="sqft4" name="sqft" type="number" inputmode="numeric" placeholder="e.g., 5000" />
+        </div>
+        <div>
+          <label for="schedule">Preferred Schedule</label>
+          <select id="schedule" name="schedule">
+            <option selected>After hours</option><option>During business hours</option><option>Flexible</option>
+          </select>
+        </div>
+        <div>
+          <label for="frequency2">Frequency</label>
+          <select id="frequency2" name="frequencyCommercial">
+            <option selected>One-time</option><option>Weekly</option><option>Bi-weekly</option><option>Monthly</option>
+          </select>
+        </div>
+        <div>
+          <label for="preferredDate4">Preferred Date</label>
+          <input id="preferredDate4" name="preferredDate" type="date" />
+        </div>
+      `,
+      "Post-Construction": `
+        <div>
+          <label for="constructionType">Project Type</label>
+          <select id="constructionType" name="constructionType">
+            <option selected>New build</option><option>Remodel</option><option>Tenant improvement</option>
+          </select>
+        </div>
+        <div>
+          <label for="dustLevel">Dust Level</label>
+          <select id="dustLevel" name="dustLevel">
+            <option>Light</option><option selected>Moderate</option><option>Heavy</option>
+          </select>
+        </div>
+        <div>
+          <label for="sqft5">Approx. Sq Ft</label>
+          <input id="sqft5" name="sqft" type="number" inputmode="numeric" placeholder="e.g., 3200" />
+        </div>
+        <div>
+          <label for="stickers">Window/film sticker removal?</label>
+          <select id="stickers" name="stickers">
+            <option>No</option><option selected>Yes</option>
+          </select>
+        </div>
+        <div>
+          <label for="preferredDate5">Preferred Date</label>
+          <input id="preferredDate5" name="preferredDate" type="date" />
+        </div>
+        <div>
+          <label for="crewAccess">Site Access</label>
+          <select id="crewAccess" name="crewAccess">
+            <option selected>GC on site</option><option>Key/code provided</option><option>Meet onsite</option>
+          </select>
+        </div>
+      `,
+      "Other": `
+        <div class="row-1" style="grid-column:1/-1">
+          <label for="otherDetails">Describe your cleaning need</label>
+          <textarea id="otherDetails" name="otherDetails" placeholder="Short-term rental turns, estate cleanout, event cleanup, etc."></textarea>
+        </div>
+        <div>
+          <label for="sqft6">Approx. Sq Ft</label>
+          <input id="sqft6" name="sqft" type="number" inputmode="numeric" placeholder="If applicable" />
+        </div>
+        <div>
+          <label for="preferredDate6">Preferred Date</label>
+          <input id="preferredDate6" name="preferredDate" type="date" />
+        </div>
+      `
+    };
+
+    function renderLayout(kind){
+      dynamic.className = /row-/.test(dynamic.className) ? dynamic.className : 'row-3';
+      dynamic.innerHTML = layouts[kind] || '';
+    }
+    service.addEventListener('change', e => renderLayout(e.target.value));
+    renderLayout(service.value);
+
+    // AJAX submission to prevent post-submit 404s
+    (function(){
+      const form = document.getElementById('quoteForm');
+      form.addEventListener('submit', async function(e){
+        e.preventDefault();
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const consent = document.getElementById('consent').checked;
+        if(!name || !phone || !email || !consent){
+          alert('Please complete your name, phone, email, and consent so providers can send your quotes.');
+          return;
+        }
+        try{
+          const data = new FormData(form);
+          const endpoint = form.getAttribute('action');
+          const resp = await fetch(endpoint, {
+            method:'POST',
+            body: data,
+            headers: { 'Accept':'application/json' }
+          });
+          // Always show the thanks overlay on submit
+          history.replaceState(null, '', '#thanks');
+          document.getElementById('thanksFull').style.display = 'block';
+        }catch(err){
+          history.replaceState(null, '', '#thanks');
+          document.getElementById('thanksFull').style.display = 'block';
+        }
+      });
+    })();
+
+
+    // LEAFLET MAP: highlight service polygon
+    (function initMap(){
+      const map = L.map('serviceMap', { scrollWheelZoom:false }).setView([26.28, -80.12], 10);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(map);
+
+      // Rough polygon around core service area
+      const area = L.polygon([
+        [26.463, -80.215], /* Boynton Beach */
+        [26.475, -80.081], /* Ocean side */
+        [26.380, -80.050], /* Boca coast */
+        [26.305, -80.060], /* Deerfield coast */
+        [26.265, -80.080], /* Pompano coast */
+        [26.120, -80.110], /* Ft Lauderdale coast */
+        [26.130, -80.220], /* Ft L inland */
+        [26.260, -80.280], /* Parkland */
+        [26.270, -80.265], /* Coral Springs */
+        [26.415, -80.250]  /* West Delray/Boynton */
+      ], {
+        color: '#0d3b66',
+        weight: 2,
+        fillColor: '#0d3b66',
+        fillOpacity: 0.18
+      }).addTo(map);
+
+      map.fitBounds(area.getBounds(), { padding:[20,20] });
+
+      const cities = [
+        ['Boca Raton', 26.3683, -80.1289],
+        ['Delray Beach', 26.4615, -80.0728],
+        ['Deerfield Beach', 26.3184, -80.0998],
+        ['Pompano Beach', 26.2379, -80.1248],
+        ['Fort Lauderdale', 26.1224, -80.1373],
+        ['Parkland', 26.3101, -80.2530],
+        ['Coral Springs', 26.2712, -80.2706],
+        ['Boynton Beach', 26.5318, -80.0905]
+      ];
+      cities.forEach(([name,lat,lng])=>{
+        L.circleMarker([lat,lng], {radius:4}).addTo(map).bindTooltip(name, {permanent:false});
+      });
+    })();
+  </script>
+</body>
+</html>
